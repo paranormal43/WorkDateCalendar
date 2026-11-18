@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f3f6fb" />
-    <title>ตารางกะ ทำ 4 หยุด 2</title>
+    <title>ตารางทำงาน 2026</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -84,56 +84,68 @@
         align-items: center;
         justify-content: space-between;
         gap: 10px;
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.74);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(226, 232, 240, 0.9);
         border-radius: 20px;
-        padding: 8px 10px 8px 12px;
-        box-shadow: var(--shadow-sm);
+        padding: 7px 9px 7px 10px;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
       }
 
       .legend {
         display: grid;
         grid-template-columns: repeat(2, auto);
-        gap: 6px 12px;
-        font-size: 0.84375rem;
-        font-weight: 600;
-        color: var(--ink);
+        gap: 6px 8px;
+        font-size: 0.8125rem;
+        font-weight: 500;
       }
-      .legend span {
+      .lg-pill {
         display: inline-flex;
         align-items: center;
         gap: 6px;
+        padding: 4px 10px 4px 7px;
+        border-radius: 999px;
         white-space: nowrap;
+        line-height: 1.2;
       }
-      .sw {
-        width: 25px;
-        height: 25px;
-        border-radius: 8px;
-        display: inline-grid;
-        place-items: center;
-        flex: none;
+      .lg-day {
+        background: #fffdf5;
+        border: 1px solid rgba(251, 191, 36, 0.45);
+        color: #92400e;
       }
-      .sw.dot {
-        background: #fff;
-        border: 2px solid var(--ink);
+      .lg-night {
+        background: #f5f7ff;
+        border: 1px solid rgba(165, 180, 252, 0.5);
+        color: #3730a3;
       }
-      .sw.dot::after {
-        content: "";
-        width: 7px;
-        height: 7px;
+      .lg-off {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #475569;
+      }
+      .lg-today {
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        color: #334155;
+      }
+      .lg-dot {
+        width: 8px;
+        height: 8px;
+        margin: 0 3px;
         border-radius: 50%;
-        background: var(--ink);
+        background: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+        flex: none;
       }
 
       .btn-today {
-        min-height: 44px;
+        min-height: 42px;
         padding: 0 16px;
-        border: 0;
+        border: 1px solid #cbd5e1;
         border-radius: 999px;
-        background: var(--ink);
-        color: #ffffff;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        color: #1e293b;
         font-weight: 600;
         font-size: 0.9375rem;
         cursor: pointer;
@@ -141,8 +153,11 @@
         align-items: center;
         gap: 6px;
         flex: none;
-        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16);
-        transition: opacity 0.15s ease, transform 0.1s ease;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+        transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+      }
+      .btn-today svg {
+        color: #2563eb;
       }
 
       .layout {
@@ -384,36 +399,118 @@
         background: currentColor;
       }
 
-      /* year overview */
-      .year { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-      .mini {
+      /* year overview (Version 3 full 12-month cards) */
+      .year {
         display: grid;
-        gap: 8px;
-        padding: 12px;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .ym-card {
+        display: block;
+        width: 100%;
+        padding: 14px 12px;
         text-align: left;
         border: 1px solid var(--line);
-        border-radius: 16px;
-        background: #fff;
+        border-radius: 18px;
+        background: #ffffff;
         cursor: pointer;
         box-shadow: var(--shadow-sm);
-        transition: background 0.15s ease, border-color 0.15s ease;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
       }
-      .mini.cur { border: 2px solid var(--ink); padding: 11px; }
-      .mini b { font-size: 1rem; }
-      .mg { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; }
-      .mc { aspect-ratio: 1; border: 0; border-radius: 3px; }
-      .mc.t-day { background: #fbbf24; }
-      .mc.t-night { background: #6366f1; }
-      .mc.t-off { background: #e2e8f0; }
-      .mc.today { outline: 2px solid var(--ink); outline-offset: 1px; position: relative; z-index: 1; }
+      .ym-card.cur {
+        border: 1.5px solid #64748b;
+        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+      }
+      .ym-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #eef2f6;
+      }
+      .ym-title {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .ym-tag {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #ffffff;
+        background: var(--ink);
+        padding: 2px 10px;
+        border-radius: 999px;
+      }
+      .ym-wd {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 4px;
+        margin-bottom: 6px;
+        text-align: center;
+      }
+      .ym-wd span {
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: var(--muted);
+        padding: 2px 0;
+      }
+      .ym-wd .sun { color: #ef4444; }
+      .ym-days {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 4px;
+      }
+      .ym-empty { min-height: 46px; }
+      .ym-cell {
+        min-height: 46px;
+        border-radius: 10px;
+        padding: 4px 2px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        position: relative;
+      }
+      .ym-n {
+        font-size: 0.9375rem;
+        font-weight: 700;
+        line-height: 1.1;
+      }
+      .ym-cell.t-off .ym-n { font-weight: 600; }
+      .ym-ic {
+        height: 15px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+      }
+      .ym-cell.today {
+        box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px var(--ink);
+        z-index: 1;
+      }
+      .ym-cell.t-off.today {
+        background: #ffffff;
+        color: var(--ink);
+      }
 
       @media (hover: hover) {
-        .cell:hover, .chip:hover { filter: brightness(0.96); }
-        .icon-btn:hover, .mini:hover {
+        .chip:hover { filter: brightness(0.96); }
+        .icon-btn:hover {
           background: #f8fafc;
           border-color: #94a3b8;
         }
-        .btn-today:hover { opacity: 0.9; }
+        .ym-card:hover {
+          border-color: #94a3b8;
+          box-shadow: 0 6px 18px rgba(15, 23, 42, 0.07);
+        }
+        .btn-today:hover {
+          background: #ffffff;
+          border-color: #93c5fd;
+          color: #1d4ed8;
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+        }
       }
 
       @media (min-width: 640px) {
@@ -423,16 +520,18 @@
           display: flex;
           flex-wrap: wrap;
           align-items: center;
-          gap: 10px 16px;
-          font-size: 0.9rem;
+          gap: 8px;
+          font-size: 0.84375rem;
         }
         .head-tools {
           border-radius: 999px;
-          padding: 6px 8px 6px 16px;
-          gap: 16px;
+          padding: 6px 8px 6px 10px;
+          gap: 10px;
         }
         .cal { padding: 20px; }
-        .year { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+        .year { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+        .ym-empty, .ym-cell { min-height: 44px; }
+        .ym-n { font-size: 0.875rem; }
         .seg { order: 0; width: auto; }
         .seg button { padding: 0 22px; }
       }
@@ -449,17 +548,13 @@
       }
 
       @media (min-width: 960px) {
-        .app { padding-top: 32px; padding-bottom: 64px; }
-        header { margin-bottom: 24px; }
-        .layout {
-          grid-template-columns: 360px minmax(0, 1fr);
-          grid-template-rows: auto 1fr;
-          grid-template-areas: "hero cal" "week cal";
-          gap: 16px 24px;
-          align-items: start;
-        }
+        .app { padding-top: 28px; padding-bottom: 56px; }
+        header { margin-bottom: 20px; }
+        .layout { gap: 18px; }
         .cal { padding: 24px; }
         .cal-title { font-size: 1.625rem; }
+        .cell { aspect-ratio: auto; min-height: 92px; }
+        .year { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
       }
     </style>
   </head>
@@ -638,18 +733,34 @@
           return h + "</div>";
         }
 
+        const YEAR_ICON = {
+          day: ICON.day(15),
+          night: ICON.night(14),
+          off: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><line x1="6" y1="12" x2="18" y2="12" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity="0.65"></line></svg>',
+        };
+
         function yearBody() {
           const y = st.y;
           let h = '<div class="year">';
           for (let m = 0; m < 12; m++) {
             const cur = y === T.y && m === T.m;
-            h += '<button type="button" class="mini' + (cur ? " cur" : "") + '" data-month="' + m + '" aria-label="เปิด' + MONTHS[m] + '"><b>' + MONTHS[m] + '</b><div class="mg">';
-            for (let e = dow(y, m, 1); e > 0; e--) h += "<i></i>";
+            h +=
+              '<div class="ym-card' + (cur ? " cur" : "") + '" data-month="' + m + '" role="button" tabindex="0" aria-label="เปิด' + MONTHS[m] + '">' +
+              '<div class="ym-head"><span class="ym-title">' + MONTHS[m] + "</span>" +
+              (cur ? '<span class="ym-tag">เดือนนี้</span>' : "") + "</div>" +
+              '<div class="ym-wd">';
+            WD.forEach((w, k) => (h += "<span" + (k ? "" : ' class="sun"') + ">" + w + "</span>"));
+            h += '</div><div class="ym-days">';
+            for (let e = dow(y, m, 1); e > 0; e--) h += '<div class="ym-empty"></div>';
             const last = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
             for (let d = 1; d <= last; d++) {
-              h += '<i class="mc t-' + info(y, m, d).type + (cur && d === T.d ? " today" : "") + '"></i>';
+              const i = info(y, m, d);
+              const isToday = cur && d === T.d;
+              h +=
+                '<div class="ym-cell t-' + i.type + (isToday ? " today" : "") + '">' +
+                '<span class="ym-n">' + d + '</span><span class="ym-ic">' + YEAR_ICON[i.type] + "</span></div>";
             }
-            h += "</div></button>";
+            h += "</div></div>";
           }
           return h + "</div>";
         }
@@ -668,10 +779,10 @@
 
         function renderLegend() {
           $("legend").innerHTML =
-            '<span><i class="sw t-day">' + ICON.day(17) + "</i>กะกลางวัน</span>" +
-            '<span><i class="sw t-night">' + ICON.night(17) + "</i>กะกลางคืน</span>" +
-            '<span><i class="sw t-off">' + ICON.off(17) + "</i>วันหยุด</span>" +
-            '<span><i class="sw dot"></i>วันนี้</span>';
+            '<span class="lg-pill lg-day">' + ICON.day(16) + "กะกลางวัน</span>" +
+            '<span class="lg-pill lg-night">' + ICON.night(15) + "กะกลางคืน</span>" +
+            '<span class="lg-pill lg-off">' + ICON.off(15) + "วันหยุด</span>" +
+            '<span class="lg-pill lg-today"><i class="lg-dot"></i>วันนี้</span>';
         }
 
         function renderAll() {
