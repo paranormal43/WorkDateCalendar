@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#eceef4" />
+    <title>ตารางกะ ทำ 4 หยุด 2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --paper: #eceef4;
+        --card: #ffffff;
+        --ink: #151a2c;
+        --muted: #59627a;
+        --line: #dde1ea;
+        --day: #ffd45c;
+        --day-ink: #3b2a00;
+        --night: #343a94;
+        --night-deep: #1f2478;
+        --off: #c6ebd7;
+        --off-ink: #0d4029;
+        --focus: #2563eb;
+        --r: 20px;
+        --font: "Anuphan", "Noto Sans Thai", "Sarabun", system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font: 400 1rem/1.55 var(--font);
+      }
+      button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent; }
+      button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+      button:active { transform: scale(0.96); }
+
+      .app {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: max(14px, env(safe-area-inset-top)) 12px max(40px, env(safe-area-inset-bottom));
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      h1 { margin: 0; font-size: 1.5rem; line-height: 1.3; font-weight: 700; }
+      .sub { margin: 0; color: var(--muted); font-size: 0.9375rem; }
+      .btn-today {
+        min-height: 48px;
+        padding: 0 22px;
+        border: 0;
+        border-radius: 999px;
+        background: var(--ink);
+        color: #fff;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+
+      .layout {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas: "hero" "week" "cal" "detail" "legend";
+      }
+
+      /* shift colours, shared by chips, cells, badges */
+      .t-day { background: var(--day); color: var(--day-ink); }
+      .t-night { background: var(--night); color: #fff; }
+      .t-off { background: #fff; color: #5f6880; border: 1px solid var(--line); }
+
+      /* hero */
+      .hero { grid-area: hero; border-radius: var(--r); padding: 22px; display: grid; gap: 16px; }
+      .hero.is-day { background: var(--day); color: var(--day-ink); }
+      .hero.is-night { background: var(--night-deep); color: #fff; }
+      .hero.is-off { background: var(--off); color: var(--off-ink); }
+      .hero-date { font-weight: 500; }
+      .hero-main { display: flex; align-items: center; gap: 16px; }
+      .hero-icon {
+        width: 64px; height: 64px; flex: none;
+        display: grid; place-items: center;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.55);
+      }
+      .is-night .hero-icon { background: rgba(255, 255, 255, 0.14); }
+      .hero-name { margin: 0 0 6px; font-size: 2rem; line-height: 1.25; font-weight: 700; }
+      .pips { display: flex; align-items: center; gap: 6px; font-size: 0.9375rem; font-weight: 500; }
+      .pip { width: 26px; height: 8px; border-radius: 4px; background: currentColor; opacity: 0.22; }
+      .pip.on { opacity: 1; }
+      .pips span { margin-left: 6px; }
+      .hero-note { margin: 0; font-weight: 600; font-size: 1.0625rem; }
+
+      /* next 7 days */
+      .week { grid-area: week; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; padding: 3px; }
+      .chip {
+        min-height: 66px;
+        border: 1px solid transparent;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        align-content: center;
+        line-height: 1.25;
+        cursor: pointer;
+        padding: 0;
+      }
+      .chip small { font-size: 0.8125rem; font-weight: 500; }
+      .chip b { font-size: 1.1875rem; }
+      .chip.t-off { border-color: var(--line); }
+
+      /* calendar card */
+      .cal { grid-area: cal; background: var(--card); border-radius: var(--r); padding: 12px; }
+      .cal-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; }
+      .cal-title { flex: 1; margin: 0; font-size: 1.375rem; line-height: 1.3; font-weight: 700; }
+      .cal-title small { color: var(--muted); font-size: 0.9375rem; font-weight: 500; margin-left: 6px; }
+      .icon-btn {
+        width: 48px; height: 48px;
+        display: grid; place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        background: #fff;
+        cursor: pointer;
+      }
+      .seg { order: 3; width: 100%; display: flex; padding: 4px; border-radius: 999px; background: var(--paper); }
+      .seg button {
+        flex: 1; min-height: 42px;
+        border: 0; border-radius: 999px;
+        background: transparent; color: var(--muted);
+        font-weight: 600; cursor: pointer;
+      }
+      .seg button[aria-pressed="true"] { background: #fff; color: var(--ink); box-shadow: 0 1px 3px rgba(21, 26, 44, 0.18); }
+
+      .wd, .days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; }
+      .wd { margin-bottom: 6px; }
+      .wd span { text-align: center; padding: 4px 0; font-size: 0.875rem; font-weight: 600; color: var(--muted); }
+      .wd .sun { color: #c2352b; }
+      .days { padding: 3px; margin: -3px; }
+      .cell {
+        position: relative;
+        aspect-ratio: 1 / 1.15;
+        padding: 0;
+        border: 1px solid transparent;
+        border-radius: 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1px;
+        cursor: pointer;
+      }
+      .cell.t-off { border-color: var(--line); }
+      .cell .n { font-size: 1.125rem; font-weight: 700; line-height: 1.2; }
+      .cell .s { display: none; font-size: 0.75rem; font-weight: 500; line-height: 1.3; }
+      .cell.today::after {
+        content: "";
+        position: absolute;
+        top: 6px; right: 6px;
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+      .cell.sel, .chip.sel { box-shadow: 0 0 0 2px #fff, 0 0 0 4.5px var(--ink); z-index: 1; }
+      .chip.today small::after { content: " •"; }
+
+      /* year overview */
+      .year { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .mini {
+        display: grid; gap: 8px;
+        padding: 12px;
+        text-align: left;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: #fff;
+        cursor: pointer;
+      }
+      .mini.cur { border: 2px solid var(--ink); padding: 11px; }
+      .mini b { font-size: 1rem; }
+      .mg { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; }
+      .mc { aspect-ratio: 1; border: 0; border-radius: 3px; }
+      .mc.t-off { background: #e6e9f0; }
+      .mc.today { outline: 2px solid var(--ink); outline-offset: 1px; position: relative; z-index: 1; }
+
+      /* selected-day detail */
+      .detail { grid-area: detail; background: var(--card); border-radius: var(--r); padding: 18px; }
+      .detail h2 { margin: 0 0 10px; font-size: 1.125rem; line-height: 1.4; font-weight: 600; }
+      .badge {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 7px 16px 7px 12px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 1.0625rem;
+      }
+      .detail p { margin: 10px 0 0; color: var(--muted); }
+
+      .legend {
+        grid-area: legend;
+        display: flex; flex-wrap: wrap; gap: 10px 20px;
+        padding: 4px 4px 0;
+        font-size: 0.9375rem; font-weight: 500;
+      }
+      .legend span { display: inline-flex; align-items: center; gap: 8px; }
+      .sw { width: 24px; height: 24px; border-radius: 8px; display: inline-grid; place-items: center; }
+      .sw.dot::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ink); }
+      .sw.ring { background: #fff; border: 1px solid var(--line); box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--ink); width: 20px; height: 20px; margin: 0 2px; }
+
+      @media (hover: hover) {
+        .cell:hover, .chip:hover { filter: brightness(0.94); }
+        .icon-btn:hover, .mini:hover { background: var(--paper); }
+      }
+
+      @media (min-width: 640px) {
+        .app { padding-left: 24px; padding-right: 24px; }
+        h1 { font-size: 1.75rem; }
+        .cal { padding: 20px; }
+        .year { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+        .seg { order: 0; width: auto; }
+        .seg button { padding: 0 22px; }
+      }
+      @media (min-width: 760px) {
+        .cell .s { display: block; }
+        .cell { aspect-ratio: 1 / 0.9; }
+      }
+      @media (min-width: 960px) {
+        .app { padding-top: 32px; padding-bottom: 64px; }
+        header { margin-bottom: 24px; }
+        .layout {
+          grid-template-columns: 360px minmax(0, 1fr);
+          grid-template-rows: auto auto auto 1fr;
+          grid-template-areas: "hero cal" "week cal" "detail cal" "legend cal";
+          gap: 16px 24px;
+          align-items: start;
+        }
+        .cal { padding: 24px; }
+        .cal-title { font-size: 1.625rem; }
+        .cell .n { font-size: 1.25rem; }
+        .cell .s { font-size: 0.8125rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div>
+          <h1>ตารางกะ</h1>
+          <p class="sub">ทำ 4 วัน หยุด 2 วัน สลับกะอัตโนมัติ</p>
+        </div>
+        <button type="button" id="jumpTodayBtn" class="btn-today">วันนี้</button>
+      </header>
+
+      <div class="layout">
+        <section id="hero" class="hero is-day" aria-live="polite"></section>
+
+        <div id="week" class="week" aria-label="7 วันข้างหน้า"></div>
+
+        <section class="cal">
+          <div class="cal-head">
+            <h2 id="calTitle" class="cal-title"></h2>
+            <div class="seg" role="group" aria-label="มุมมอง">
+              <button type="button" id="modeMonth" aria-pressed="true">เดือน</button>
+              <button type="button" id="modeYear" aria-pressed="false">ทั้งปี</button>
+            </div>
+            <button type="button" id="prevBtn" class="icon-btn" aria-label="ก่อนหน้า">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <button type="button" id="nextBtn" class="icon-btn" aria-label="ถัดไป">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+          <div id="calBody"></div>
+        </section>
+
+        <section id="detail" class="detail" aria-live="polite"></section>
+
+        <div class="legend" id="legend"></div>
+      </div>
+    </div>
+
+    <script>
+      // =========================================================================
+      // ตั้งค่าสำหรับ GitHub Pages (แก้แค่ 2 บรรทัดนี้)
+      // - firstOffDate: วันหยุดวันแรก 'YYYY-MM-DD' (นับเป็นวันหยุด 2 วันติดกันอัตโนมัติ)
+      // - shiftAfterOff: กะที่เข้าหลังหยุดครบ 2 วัน ('day' หรือ 'night')
+      // =========================================================================
+      const STATIC_CONFIG = {
+        firstOffDate: "2026-11-14",
+        shiftAfterOff: "night",
+      };
+
+      (function () {
+        const MONTHS = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+        const WD = ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"];
+        const WDF = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
+        const LABEL = { day: "กะกลางวัน", night: "กะกลางคืน", off: "วันหยุด" };
+        const SHORT = { day: "กลางวัน", night: "กลางคืน", off: "หยุด" };
+
+        const svg = (s, body) =>
+          '<svg width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + body + "</svg>";
+        const ICON = {
+          day: (s) => svg(s, '<circle cx="12" cy="12" r="4.5"></circle><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"></path>'),
+          night: (s) => svg(s, '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"></path>'),
+          off: (s) => svg(s, '<path d="M4 9h12v5a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V9z"></path><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16M8 3v2M12 3v2"></path>'),
+        };
+
+        const $ = (id) => document.getElementById(id);
+        const pad = (n) => String(n).padStart(2, "0");
+        const key = (y, m, d) => y + "-" + pad(m + 1) + "-" + pad(d);
+        const idx = (y, m, d) => Math.floor(Date.UTC(y, m, d) / 86400000);
+        const fromIdx = (i) => {
+          const t = new Date(i * 864e5);
+          return { y: t.getUTCFullYear(), m: t.getUTCMonth(), d: t.getUTCDate() };
+        };
+        const dow = (y, m, d) => new Date(Date.UTC(y, m, d)).getUTCDay();
+        const fullDate = (y, m, d) => "วัน" + WDF[dow(y, m, d)] + "ที่ " + d + " " + MONTHS[m] + " " + (y + 543);
+
+        function validDate(s) {
+          if (typeof s !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+          const [y, m, d] = s.split("-").map(Number);
+          const t = new Date(Date.UTC(y, m - 1, d));
+          return t.getUTCFullYear() === y && t.getUTCMonth() === m - 1 && t.getUTCDate() === d;
+        }
+
+        const firstOff = validDate(STATIC_CONFIG.firstOffDate) ? STATIC_CONFIG.firstOffDate : "2026-01-01";
+        const firstShift = STATIC_CONFIG.shiftAfterOff === "night" ? "night" : "day";
+        const secondShift = firstShift === "day" ? "night" : "day";
+        const [ay, am, ad] = firstOff.split("-").map(Number);
+        const anchor = idx(ay, am - 1, ad);
+
+        // รอบ 12 วัน: หยุด 2 -> กะแรก 4 -> หยุด 2 -> กะที่สอง 4
+        function info(y, m, d) {
+          const pos = (((idx(y, m, d) - anchor) % 12) + 12) % 12;
+          if (pos < 2) return { type: "off", n: pos + 1, total: 2, next: firstShift };
+          if (pos < 6) return { type: firstShift, n: pos - 1, total: 4, next: "off" };
+          if (pos < 8) return { type: "off", n: pos - 5, total: 2, next: secondShift };
+          return { type: secondShift, n: pos - 7, total: 4, next: "off" };
+        }
+
+        function note(i) {
+          const left = i.total - i.n;
+          if (i.type === "off") {
+            return left === 0 ? "พรุ่งนี้เข้า" + LABEL[i.next] : "หยุดอีก " + left + " วัน แล้วเข้า" + LABEL[i.next];
+          }
+          return left === 0 ? "วันสุดท้ายของกะ พรุ่งนี้หยุด" : "ทำอีก " + left + " วัน แล้วหยุด 2 วัน";
+        }
+
+        let now = new Date();
+        let T = { y: now.getFullYear(), m: now.getMonth(), d: now.getDate() };
+        const st = { y: T.y, m: T.m, sel: key(T.y, T.m, T.d), mode: "month" };
+
+        function renderHero() {
+          const i = info(T.y, T.m, T.d);
+          let pips = "";
+          for (let k = 0; k < i.total; k++) pips += '<i class="pip' + (k < i.n ? " on" : "") + '"></i>';
+          const hero = $("hero");
+          hero.className = "hero is-" + i.type;
+          hero.innerHTML =
+            '<div class="hero-date">วันนี้ ' + fullDate(T.y, T.m, T.d) + "</div>" +
+            '<div class="hero-main"><div class="hero-icon">' + ICON[i.type](34) + "</div><div>" +
+            '<h2 class="hero-name">' + LABEL[i.type] + "</h2>" +
+            '<div class="pips">' + pips + "<span>วันที่ " + i.n + " จาก " + i.total + "</span></div></div></div>" +
+            '<p class="hero-note">' + note(i) + "</p>";
+        }
+
+        function renderWeek() {
+          const base = idx(T.y, T.m, T.d);
+          let h = "";
+          for (let k = 0; k < 7; k++) {
+            const p = fromIdx(base + k);
+            const i = info(p.y, p.m, p.d);
+            const ds = key(p.y, p.m, p.d);
+            h +=
+              '<button type="button" class="chip t-' + i.type + (k === 0 ? " today" : "") + (st.sel === ds ? " sel" : "") +
+              '" data-date="' + ds + '" aria-label="' + fullDate(p.y, p.m, p.d) + " " + LABEL[i.type] + '">' +
+              "<small>" + WD[dow(p.y, p.m, p.d)] + "</small><b>" + p.d + "</b></button>";
+          }
+          $("week").innerHTML = h;
+        }
+
+        function renderDetail() {
+          const [y, mm, d] = st.sel.split("-").map(Number);
+          const m = mm - 1;
+          const i = info(y, m, d);
+          $("detail").innerHTML =
+            "<h2>" + fullDate(y, m, d) + "</h2>" +
+            '<span class="badge t-' + i.type + '">' + ICON[i.type](22) + LABEL[i.type] + "</span>" +
+            "<p>วันที่ " + i.n + " จาก " + i.total + " • " + note(i) + "</p>";
+        }
+
+        function monthBody() {
+          const { y, m } = st;
+          let h = '<div class="wd">';
+          WD.forEach((w, k) => (h += "<span" + (k ? "" : ' class="sun"') + ">" + w + "</span>"));
+          h += '</div><div class="days">';
+          for (let e = dow(y, m, 1); e > 0; e--) h += "<span></span>";
+          const last = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+          for (let d = 1; d <= last; d++) {
+            const i = info(y, m, d);
+            const ds = key(y, m, d);
+            const isToday = y === T.y && m === T.m && d === T.d;
+            h +=
+              '<button type="button" class="cell t-' + i.type + (isToday ? " today" : "") + (st.sel === ds ? " sel" : "") +
+              '" data-date="' + ds + '" aria-label="' + d + " " + MONTHS[m] + " " + (y + 543) + " " + LABEL[i.type] +
+              (isToday ? " (วันนี้)" : "") + '">' +
+              '<span class="n">' + d + '</span><span class="s">' + SHORT[i.type] + " " + i.n + "/" + i.total + "</span></button>";
+          }
+          return h + "</div>";
+        }
+
+        function yearBody() {
+          const y = st.y;
+          let h = '<div class="year">';
+          for (let m = 0; m < 12; m++) {
+            const cur = y === T.y && m === T.m;
+            h += '<button type="button" class="mini' + (cur ? " cur" : "") + '" data-month="' + m + '" aria-label="เปิด' + MONTHS[m] + '"><b>' + MONTHS[m] + '</b><div class="mg">';
+            for (let e = dow(y, m, 1); e > 0; e--) h += "<i></i>";
+            const last = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+            for (let d = 1; d <= last; d++) {
+              h += '<i class="mc t-' + info(y, m, d).type + (cur && d === T.d ? " today" : "") + '"></i>';
+            }
+            h += "</div></button>";
+          }
+          return h + "</div>";
+        }
+
+        function renderCal() {
+          const isMonth = st.mode === "month";
+          $("calTitle").innerHTML = isMonth
+            ? MONTHS[st.m] + " " + (st.y + 543) + "<small>ค.ศ. " + st.y + "</small>"
+            : "ปี " + (st.y + 543) + "<small>ค.ศ. " + st.y + "</small>";
+          $("modeMonth").setAttribute("aria-pressed", String(isMonth));
+          $("modeYear").setAttribute("aria-pressed", String(!isMonth));
+          $("prevBtn").setAttribute("aria-label", isMonth ? "เดือนก่อนหน้า" : "ปีก่อนหน้า");
+          $("nextBtn").setAttribute("aria-label", isMonth ? "เดือนถัดไป" : "ปีถัดไป");
+          $("calBody").innerHTML = isMonth ? monthBody() : yearBody();
+        }
+
+        function renderLegend() {
+          $("legend").innerHTML =
+            '<span><i class="sw t-day">' + ICON.day(15) + "</i>กะกลางวัน</span>" +
+            '<span><i class="sw t-night">' + ICON.night(15) + "</i>กะกลางคืน</span>" +
+            '<span><i class="sw t-off">' + ICON.off(15) + "</i>วันหยุด</span>" +
+            '<span><i class="sw dot"></i>วันนี้</span>' +
+            '<span><i class="sw ring"></i>วันที่เลือก</span>';
+        }
+
+        function renderAll() {
+          renderHero();
+          renderWeek();
+          renderCal();
+          renderDetail();
+        }
+
+        function step(dir) {
+          if (st.mode === "year") {
+            st.y += dir;
+          } else {
+            st.m += dir;
+            if (st.m < 0) { st.m = 11; st.y--; }
+            if (st.m > 11) { st.m = 0; st.y++; }
+          }
+          renderCal();
+        }
+
+        function selectDate(ds) {
+          const [y, mm] = ds.split("-").map(Number);
+          st.sel = ds;
+          st.y = y;
+          st.m = mm - 1;
+          st.mode = "month";
+          renderAll();
+        }
+
+        function goToday() {
+          now = new Date();
+          T = { y: now.getFullYear(), m: now.getMonth(), d: now.getDate() };
+          st.y = T.y;
+          st.m = T.m;
+          st.sel = key(T.y, T.m, T.d);
+          st.mode = "month";
+          renderAll();
+        }
+
+        $("prevBtn").addEventListener("click", () => step(-1));
+        $("nextBtn").addEventListener("click", () => step(1));
+        $("modeMonth").addEventListener("click", () => { st.mode = "month"; renderCal(); });
+        $("modeYear").addEventListener("click", () => { st.mode = "year"; renderCal(); });
+        $("jumpTodayBtn").addEventListener("click", () => {
+          goToday();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+        $("hero").addEventListener("click", goToday);
+        $("week").addEventListener("click", (e) => {
+          const b = e.target.closest("[data-date]");
+          if (b) selectDate(b.dataset.date);
+        });
+        $("calBody").addEventListener("click", (e) => {
+          const c = e.target.closest("[data-date]");
+          if (c) return selectDate(c.dataset.date);
+          const mini = e.target.closest("[data-month]");
+          if (mini) { st.m = Number(mini.dataset.month); st.mode = "month"; renderCal(); }
+        });
+
+        // ปัดซ้าย/ขวาเพื่อเปลี่ยนเดือนบนมือถือ
+        let sx = 0, sy = 0;
+        $("calBody").addEventListener("touchstart", (e) => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+        $("calBody").addEventListener("touchend", (e) => {
+          const dx = e.changedTouches[0].clientX - sx;
+          const dy = e.changedTouches[0].clientY - sy;
+          if (Math.abs(dx) > 60 && Math.abs(dy) < 45) step(dx < 0 ? 1 : -1);
+        }, { passive: true });
+
+        // ซิงค์วันนี้เมื่อเปิดหน้าใหม่หรือกลับมาจากแท็บอื่น
+        window.addEventListener("pageshow", goToday);
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState !== "visible") return;
+          const c = new Date();
+          if (c.getFullYear() !== T.y || c.getMonth() !== T.m || c.getDate() !== T.d) goToday();
+        });
+
+        renderLegend();
+        goToday();
+      })();
+    </script>
+  </body>
+</html>
